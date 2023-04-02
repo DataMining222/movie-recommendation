@@ -43,7 +43,8 @@ qualified = md[(md['vote_count'] >= m) &
                                                 'vote_count', 
                                                 'vote_average', 
                                                 'popularity', 
-                                                'genres']]
+                                                'genres',
+                                                'imdb_id']]
 
 qualified['vote_count'] = qualified['vote_count'].astype('int')
 qualified['vote_average'] = qualified['vote_average'].astype('int')
@@ -67,13 +68,13 @@ def build_chart(genre, percentile=0.85):
     m = vote_counts.quantile(percentile)
     
     qualified = df[(df['vote_count'] >= m) & (df['vote_count'].notnull()) & 
-                   (df['vote_average'].notnull())][['title', 'year', 'vote_count', 'vote_average', 'popularity']]
+                   (df['vote_average'].notnull())][['title', 'year', 'vote_count', 'vote_average', 'popularity', 'imdb_id']]
     qualified['vote_count'] = qualified['vote_count'].astype('int')
     qualified['vote_average'] = qualified['vote_average'].astype('int')
     
     qualified['wr'] = qualified.apply(lambda x: 
                         (x['vote_count']/(x['vote_count']+m) * x['vote_average']) + (m/(m+x['vote_count']) * C),
                         axis=1)
-    qualified = qualified.sort_values('wr', ascending=False).head(250)
+    qualified = qualified.sort_values('wr', ascending=False).head(15)
     
     return qualified

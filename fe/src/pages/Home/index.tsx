@@ -12,6 +12,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 const Home = (): ReactElement => {
   const [searchText, setSearchText] = useState("Comedy"); // Initial value set to 'man' to display default search results on UI
   const [select, setSelect] = useState("simple");
+  const [movies, setMovies] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
@@ -20,10 +21,16 @@ const Home = (): ReactElement => {
     setTimeout(() => {
       refetch();
     }, 1000);
-  }, [searchText]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [movies, searchText]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSearchChange = (text: string) => {
+  const handleSearchChange = async (text: string) => {
     setSearchText(text);
+    let searchedMovies = await service.get(
+      CONSTANTS.BASE_URL,
+      select,
+      searchText
+    );
+    setMovies(searchedMovies);
   };
 
   const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {

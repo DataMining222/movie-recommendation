@@ -6,29 +6,18 @@ import CONSTANTS from "utils/constants";
  * @returns {string}
  */
 const getBaseURL = (url: string): string => {
-  return `${url}?${new URLSearchParams({
-    apikey: CONSTANTS.API_KEY,
-  }).toString()}`;
+  return `${url}`;
 };
 
 /**
  * Service object exported to use across application
  */
 const service = {
-  get: async (url: string, params: object) => {
+  get: async (url: string, modelType: string, searchText: string) => {
     try {
-      let response = await fetch(
-        `${getBaseURL(url)}&${new URLSearchParams({
-          ...params,
-        }).toString()}`,
-        {
-          method: "GET",
-          cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded", // application/x-www-form-urlencoded, application/json
-          },
-        }
-      ).then((res) => res.json());
+      let response = await fetch(`${url}/${modelType}/${searchText}`, {
+        method: "GET",
+      }).then((res) => res.json());
 
       if (response.Response === "False") {
         throw Error(response.Error);

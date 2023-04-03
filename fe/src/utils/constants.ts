@@ -1,7 +1,5 @@
 const CONSTANTS = {
-  BASE_URL: "https://www.omdbapi.com/",
-  API_USER_ID: "tt3896198",
-  API_KEY: "91300fc7",
+  BASE_URL: "http://localhost:5000/api",
 };
 
 export default CONSTANTS;

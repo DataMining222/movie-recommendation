@@ -7,7 +7,6 @@ import ScrollToTop from "components/ScrollToTop";
 import AppHeader from "components/AppHeader";
 
 const Home = lazy(() => import("pages/Home"));
-const MovieDetails = lazy(() => import("pages/MovieDetails"));
 
 const Layout = () => {
   return (
@@ -19,9 +18,6 @@ const Layout = () => {
           <Switch>
             <Route exact path="/">
               <Home />
-            </Route>
-            <Route path="/:movieId">
-              <MovieDetails />
             </Route>
           </Switch>
         </Suspense>

@@ -19,6 +19,6 @@ class SimpleControllers:
             movie['image'] = movie_json['Poster']
 
         res = {
-            "data": movies
+            "Search": movies
         }
         return res

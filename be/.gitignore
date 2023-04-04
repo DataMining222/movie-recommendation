@@ -1,0 +1,5 @@
+/venv
+/input_data
+.ipynb_checkpoints
+Movie_recommendation_engine.ipynb
+__pycache__

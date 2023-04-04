@@ -11,39 +11,33 @@ import CalendarToday from "@material-ui/icons/CalendarToday";
 import { useHistory } from "react-router";
 
 export type MovieCardProps = {
-  Title: string;
-  Year: string;
-  imdbID: string;
-  Type: string;
-  Poster: string;
+  title: string;
+  year: string;
+  imdb_id: string;
+  image: string;
 };
 
-const MovieCard = ({ Title, Year, imdbID, Type, Poster }: MovieCardProps) => {
-  const history = useHistory();
-  const handleMovieSelect = () => {
-    history.push(`/${imdbID}`);
-  };
-
+const MovieCard = ({ title, year, imdb_id, image }: MovieCardProps) => {
   return (
     <Card className={styles.root}>
-      <CardActionArea className={styles.cardArea} onClick={handleMovieSelect}>
+      <CardActionArea className={styles.cardArea}>
         <CardMedia
           component="img"
-          alt={Title}
+          alt={title}
           height="400"
-          image={Poster}
-          title={Title}
+          image={image}
+          title={title}
           className={styles.poster}
         />
         <CardContent className={styles.overText}>
-            <h2>{Title}</h2>
+          <h2>{title}</h2>
         </CardContent>
       </CardActionArea>
       <CardActions className={styles.actionsContainer}>
         <Typography gutterBottom component="i" className={styles.yearSection}>
           <CalendarToday fontSize="small" />
           &nbsp;
-          {Year}
+          {year}
         </Typography>
         <IconButton aria-label="add to favorites">
           <FavoriteIcon />

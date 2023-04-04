@@ -6,11 +6,13 @@ import CONSTANTS from "utils/constants";
 import { useInfiniteQuery } from "react-query";
 import MovieCard, { MovieCardProps } from "components/MovieCard";
 import Skeleton from "components/MovieCard/Skeleton";
-import { Grid } from "@material-ui/core";
+import { Grid, Select, MenuItem, FormControl } from "@material-ui/core";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const Home = (): ReactElement => {
-  const [searchText, setSearchText] = useState("man"); // Initial value set to 'man' to display default search results on UI
+  const [searchText, setSearchText] = useState("Comedy"); // Initial value set to 'man' to display default search results on UI
+  const [select, setSelect] = useState("simple");
+  const [movies, setMovies] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
@@ -19,17 +21,24 @@ const Home = (): ReactElement => {
     setTimeout(() => {
       refetch();
     }, 1000);
-  }, [searchText]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [movies, searchText]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSearchChange = (text: string) => {
+  const handleSearchChange = async (text: string) => {
     setSearchText(text);
+    let searchedMovies = await service.get(
+      CONSTANTS.BASE_URL,
+      select,
+      searchText
+    );
+    setMovies(searchedMovies);
   };
 
-  const fetchMovies = ({ pageParam = 1 }) =>
-    service.get(CONSTANTS.BASE_URL, {
-      s: searchText,
-      page: pageParam,
-    });
+  const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setSelect(event.target.value as string);
+  };
+
+  const fetchMovies = async () =>
+    await service.get(CONSTANTS.BASE_URL, select, searchText);
 
   const {
     data,
@@ -68,6 +77,21 @@ const Home = (): ReactElement => {
         <Grid item xs={12} sm={10}>
           <Grid container justify="center">
             <Grid item xs={12} md={4}>
+              <FormControl fullWidth>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Age"
+                  defaultValue={select}
+                  onChange={handleSelectChange}
+                >
+                  <MenuItem value={"simple"}>Simple</MenuItem>
+                  <MenuItem value={"content"}>Content Based</MenuItem>
+                  <MenuItem value={"hybrid"}>Hybrid</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={4}>
               <SearchBox
                 className={styles.searchBox}
                 onChange={handleSearchChange}
@@ -99,17 +123,9 @@ const Home = (): ReactElement => {
                         return { Search: [...a.Search, ...b.Search] };
                       })
                       .Search.map(
-                        ({
-                          Title,
-                          imdbID,
-                          Type,
-                          Year,
-                          Poster,
-                        }: MovieCardProps) => (
-                          <Grid item xs={12} md={3} key={imdbID}>
-                            <MovieCard
-                              {...{ Title, imdbID, Type, Year, Poster }}
-                            />
+                        ({ title, imdb_id, year, image }: MovieCardProps) => (
+                          <Grid item xs={12} md={3} key={imdb_id}>
+                            <MovieCard {...{ title, imdb_id, year, image }} />
                           </Grid>
                         )
                       )}

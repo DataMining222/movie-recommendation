@@ -1,0 +1,10 @@
+matplotlib
+seaborn
+pandas
+numpy
+scipy
+scikit-learn
+nltk
+surprise
+warnings
+requests

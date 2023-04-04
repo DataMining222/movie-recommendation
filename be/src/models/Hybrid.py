@@ -141,15 +141,43 @@ id_map = id_map.merge(smd[['title', 'id']], on='id').set_index('title')
 
 indices_map = id_map.set_index('id')
 
+# def get_recommendations(userId, title):
+#     idx = indices[title]
+#     tmdbId = id_map.loc[title]['id']
+#     movie_id = id_map.loc[title]['movieId']
+#     sim_scores = list(enumerate(cosine_sim[int(idx)]))
+#     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+#     sim_scores = sim_scores[1:26]
+#     movie_indices = [i[0] for i in sim_scores]
+#     movies = smd.iloc[movie_indices][['imdb_id','title', 'vote_count', 'vote_average', 'release_date', 'id']]
+#     movies['est'] = movies['id'].apply(lambda x: svd.predict(userId, indices_map.loc[x]['movieId']).est)
+#     movies = movies.sort_values('est', ascending=False)
+#     return movies.head(10)
+
+from fuzzywuzzy import fuzz, process
+
 def get_recommendations(userId, title):
-    idx = indices[title]
-    tmdbId = id_map.loc[title]['id']
-    movie_id = id_map.loc[title]['movieId']
+    # Find closest matching title in smd DataFrame
+    closest_matches = process.extractBests(title.lower(), titles, scorer=fuzz.token_set_ratio, limit=5)
+
+    # Check if closest match meets a minimum similarity threshold
+    closest_match = None
+    for match in closest_matches:
+        if match[1] >= 70:
+            closest_match = match[0]
+            break
+
+    if closest_match is None:
+        return "No matches found. Please try again with a different title."
+  
+    idx = indices[closest_match]
+    tmdbId = id_map.loc[closest_match]['id']
+    movie_id = id_map.loc[closest_match]['movieId']
     sim_scores = list(enumerate(cosine_sim[int(idx)]))
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
     sim_scores = sim_scores[1:26]
     movie_indices = [i[0] for i in sim_scores]
-    movies = smd.iloc[movie_indices][['imdb_id','title', 'vote_count', 'vote_average', 'release_date', 'id']]
+    movies = smd.iloc[movie_indices][['title', 'vote_count', 'vote_average', 'release_date', 'id']]
     movies['est'] = movies['id'].apply(lambda x: svd.predict(userId, indices_map.loc[x]['movieId']).est)
     movies = movies.sort_values('est', ascending=False)
     return movies.head(10)

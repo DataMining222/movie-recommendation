@@ -118,23 +118,63 @@ smd = smd.reset_index()
 titles = smd['title']
 indices = pd.Series(smd.index, index=smd['title'])
 
+# def get_recommendations(title):
+#     idx = indices[title]
+#     sim_scores = list(enumerate(cosine_sim[idx]))
+#     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+#     sim_scores = sim_scores[1:26]
+#     movie_indices = [i[0] for i in sim_scores]
+    
+#     movies = smd.iloc[movie_indices][['imdb_id','title', 'vote_count', 'vote_average', 'year']]
+#     vote_counts = movies[movies['vote_count'].notnull()]['vote_count'].astype('int')
+#     vote_averages = movies[movies['vote_average'].notnull()]['vote_average'].astype('int')
+#     C = vote_averages.mean()
+#     m = vote_counts.quantile(0.60)
+#     qualified = movies[(movies['vote_count'] >= m) & (movies['vote_count'].notnull()) & 
+#                        (movies['vote_average'].notnull())]
+#     qualified['vote_count'] = qualified['vote_count'].astype('int')
+#     qualified['vote_average'] = qualified['vote_average'].astype('int')
+#     qualified['wr'] = qualified.apply(weighted_rating, axis=1)
+#     qualified = qualified.sort_values('wr', ascending=False).head(10)
+#     return qualified
+
+from fuzzywuzzy import fuzz
+
 def get_recommendations(title):
-    idx = indices[title]
+    # Convert input title to lowercase
+    title_lower = title.lower()
+
+    # Find closest matching title in smd DataFrame
+    closest_match = None
+    closest_match_ratio = -1
+    for smd_title in smd['title'].values:
+        # Compare lowercase versions of titles using fuzzy string matching
+        ratio = fuzz.ratio(title_lower, smd_title.lower())
+        if ratio > closest_match_ratio:
+            closest_match = smd_title
+            closest_match_ratio = ratio
+
+    # Check if closest match meets a minimum similarity threshold
+    if closest_match_ratio < 50:
+        return "No matches found. Please try again with a different title."
+
+    # Get indices of top 25 most similar movies
+    idx = indices[closest_match]
     sim_scores = list(enumerate(cosine_sim[idx]))
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
     sim_scores = sim_scores[1:26]
     movie_indices = [i[0] for i in sim_scores]
-    
-    movies = smd.iloc[movie_indices][['imdb_id','title', 'vote_count', 'vote_average', 'year']]
-    vote_counts = movies[movies['vote_count'].notnull()]['vote_count'].astype('int')
-    vote_averages = movies[movies['vote_average'].notnull()]['vote_average'].astype('int')
+
+    # Filter and sort qualified movies by weighted rating
+    qualified = smd.iloc[movie_indices][['title', 'vote_count', 'vote_average', 'year']]
+    vote_counts = qualified[qualified['vote_count'].notnull()]['vote_count'].astype('int')
+    vote_averages = qualified[qualified['vote_average'].notnull()]['vote_average'].astype('int')
     C = vote_averages.mean()
     m = vote_counts.quantile(0.60)
-    qualified = movies[(movies['vote_count'] >= m) & (movies['vote_count'].notnull()) & 
-                       (movies['vote_average'].notnull())]
+    qualified = qualified[(qualified['vote_count'] >= m) & (qualified['vote_count'].notnull()) & 
+                       (qualified['vote_average'].notnull())]
     qualified['vote_count'] = qualified['vote_count'].astype('int')
     qualified['vote_average'] = qualified['vote_average'].astype('int')
     qualified['wr'] = qualified.apply(weighted_rating, axis=1)
     qualified = qualified.sort_values('wr', ascending=False).head(10)
     return qualified
-

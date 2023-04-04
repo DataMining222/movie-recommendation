@@ -87,7 +87,6 @@ const Home = (): ReactElement => {
                 >
                   <MenuItem value={"simple"}>Simple</MenuItem>
                   <MenuItem value={"content"}>Content Based</MenuItem>
-                  <MenuItem value={"cf"}>CF Based</MenuItem>
                   <MenuItem value={"hybrid"}>Hybrid</MenuItem>
                 </Select>
               </FormControl>

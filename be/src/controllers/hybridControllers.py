@@ -5,7 +5,7 @@ class HybridControllers:
         movies = get_recommendations(1, title).to_dict('records')
 
         for movie in movies:
-            movie_data = requests.get(f"https://www.omdbapi.com/?i={movie['imdb_id']}&apikey=810b65dc")
+            movie_data = requests.get(f"https://www.omdbapi.com/?i={movie['imdb_id']}&apikey=f31303c2")
             movie_json = movie_data.json()
             movie['image'] = movie_json['Poster']
 

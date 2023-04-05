@@ -166,7 +166,7 @@ def get_recommendations(title):
     movie_indices = [i[0] for i in sim_scores]
 
     # Filter and sort qualified movies by weighted rating
-    qualified = smd.iloc[movie_indices][['title', 'vote_count', 'vote_average', 'year']]
+    qualified = smd.iloc[movie_indices][['imdb_id','title', 'vote_count', 'vote_average', 'year']]
     vote_counts = qualified[qualified['vote_count'].notnull()]['vote_count'].astype('int')
     vote_averages = qualified[qualified['vote_average'].notnull()]['vote_average'].astype('int')
     C = vote_averages.mean()

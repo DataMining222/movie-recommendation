@@ -4,6 +4,8 @@ from ast import literal_eval
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.stem.snowball import SnowballStemmer
+from fuzzywuzzy import fuzz
+
 
 import warnings; warnings.simplefilter('ignore')
 
@@ -166,7 +168,7 @@ def get_recommendations(title):
     movie_indices = [i[0] for i in sim_scores]
 
     # Filter and sort qualified movies by weighted rating
-    qualified = smd.iloc[movie_indices][['imdb_id','title', 'vote_count', 'vote_average', 'year']]
+    qualified = smd.iloc[movie_indices][['imdb_id', 'title', 'vote_count', 'vote_average', 'year']]
     vote_counts = qualified[qualified['vote_count'].notnull()]['vote_count'].astype('int')
     vote_averages = qualified[qualified['vote_average'].notnull()]['vote_average'].astype('int')
     C = vote_averages.mean()

@@ -8,3 +8,4 @@ nltk
 surprise
 warnings
 requests
+fuzzywuzzy

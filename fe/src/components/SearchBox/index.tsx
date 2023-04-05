@@ -3,7 +3,7 @@ import { makeStyles, Paper, InputBase, IconButton } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 
 type SearchBoxProps = {
-  onChange: (text: string) => void;
+  onSearch: (text: string) => void;
   className?: string;
 };
 const defaultProps = {
@@ -27,13 +27,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SearchBox = ({ onChange, className }: SearchBoxProps): ReactElement => {
+const SearchBox = ({ onSearch, className }: SearchBoxProps): ReactElement => {
   const classes = useStyles();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleChange = () => {
     if (!!inputRef.current) {
-      onChange(inputRef.current.value);
+      onSearch(inputRef.current.value);
     }
   };
 

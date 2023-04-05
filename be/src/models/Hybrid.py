@@ -169,6 +169,8 @@ def get_recommendations(userId, title):
 
     if closest_match is None:
         return "No matches found. Please try again with a different title."
+    
+    print(closest_match)
   
     idx = indices[closest_match]
     tmdbId = id_map.loc[closest_match]['id']
@@ -178,6 +180,7 @@ def get_recommendations(userId, title):
     sim_scores = sim_scores[1:26]
     movie_indices = [i[0] for i in sim_scores]
     movies = smd.iloc[movie_indices][['title', 'vote_count', 'vote_average', 'release_date', 'id']]
-    movies['est'] = movies['id'].apply(lambda x: svd.predict(userId, indices_map.loc[x]['movieId']).est)
+    movies['est'] = movies['id'].apply(lambda x: svd.predict(userId, indices_map.loc[x]['movieId'])[3])
+
     movies = movies.sort_values('est', ascending=False)
     return movies.head(10)
